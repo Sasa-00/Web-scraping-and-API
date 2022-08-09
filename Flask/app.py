@@ -50,10 +50,16 @@ def pretrazi_po_id(id):
 def pretrazi():
 
     # Smestanje parametara u promenljive
-    tip = request.args.get('tip')
+    try:
+        tip = request.args.get('tip').lower()
+    except AttributeError:
+        tip = None
     minkv = request.args.get('minkv')
     maxkv = request.args.get('maxkv')
-    parking = request.args.get('parking')
+    try:
+        parking = request.args.get('parking').lower()
+    except AttributeError:
+        parking = None
 
     lst = []
     # Selektovanje svih elemenata baze
@@ -149,7 +155,7 @@ def pretrazi():
             ispisivanje(lst)
 
         # Ako samo imaju parametri kvadrature
-        elif tip == None and minkv == None and maxkv == None and parking == None:
+        elif tip == None and minkv != None and maxkv != None and parking == None:
             minkvadratura = int(minkv)
             maxkvadratura = int(maxkv)
             if minkvadratura < kvadratura < maxkvadratura:
@@ -182,6 +188,9 @@ def pretrazi():
             maxkvadratura = int(maxkv)
             if kvadratura < maxkvadratura:
                 ispisivanje(lst)
+
+        # else:
+        #     return {'result': 'Not found'}, 404
 
     lst2 = []
     [lst2.append(item) for item in lst if item not in lst2]

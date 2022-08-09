@@ -225,11 +225,10 @@ for oglas in oglasi:
 # Iteracija kroz stranice
 for broj in BROJEVI:
     # Definisanje stranice gde se nalazi jos oglasa
-    vise_oglasa_str = soup.find('a', class_='next-number', text=broj)
-    vise_oglasa = vise_oglasa_div.find(
-        'a', class_='text-primary ts-small', href=True)['href']
+    vise_oglasa_str = soup.find(
+        'a', class_='next-number', text=broj, href=True)['href']
     # Pravljenje nove url adrese sa vise oglasa
-    newURL = URL+vise_oglasa
+    newURL = URL+vise_oglasa_str
     # Smestanje iste adrese u promenljivu (HTML forma)
     html_text = requests.get(newURL).text
     # Inicijalizacija objekta klase, ciji su argumenti HTML fajl sa kojim radimo i parser metod koji koristimo
@@ -246,3 +245,5 @@ for broj in BROJEVI:
 # Zatvaranje konekcije sa tabelom
 cur.close()
 conn.close()
+
+print("Citanje i upis u tabelu uspesno zavrseni!")
