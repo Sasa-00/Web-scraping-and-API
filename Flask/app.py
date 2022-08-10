@@ -15,11 +15,13 @@ oglasi = db.Table('oglasi', db.metadata, autoload=True,
 
 
 # pretrazivanje po Id-u
-@app.route('/nekretnine_id/<id>')
-def pretrazi_po_id(id):
+@app.route('/nekretnine_id/<_id>')
+def pretrazi_po_id(_id):
+    br_oglasa = 0
     results = db.session.query(oglasi).all()
     for oglas in results:
-        if oglas.id == int(id):
+        br_oglasa += 1
+        if oglas.id == int(_id):
             return {"result": {
                 oglas.id: {
                     'id': oglas.id,
@@ -43,6 +45,8 @@ def pretrazi_po_id(id):
                     'cena po kvadratu': oglas.cena_po_kvadratu,
                     'ukupna cena': oglas.ukupna_cena
                 }}}
+    if int(_id) > br_oglasa:
+        return {'result': 'Given id does not exists'}, 404
 
 
 # Pretrazivanje po parametrima
@@ -94,7 +98,10 @@ def pretrazi():
         # Smestanje vrednosti kolona u variable, koje cesto koristimo
         tipOglas = oglas.tip.lower()
         parkingOglas = oglas.parking.lower()
-        kvadratura = int(oglas.kvadratura.split(" ")[0])
+        try:
+            kvadratura = float(oglas.kvadratura.split(" ")[0])
+        except:
+            pass
 
         # Odavnde pa na dole su sve kombinacije za pretrazi
         # Prvo proveravanje, ako parametri ne postoje, sve se salje
@@ -189,14 +196,16 @@ def pretrazi():
             if kvadratura < maxkvadratura:
                 ispisivanje(lst)
 
-        # else:
-        #     return {'result': 'Not found'}, 404
-
     lst2 = []
     [lst2.append(item) for item in lst if item not in lst2]
+
+    for item in lst2:
+        for k, v in list(item.items()):
+            if v == "":
+                item.pop(k)
 
     return {'result': lst2}
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000, host='0.0.0.0')
